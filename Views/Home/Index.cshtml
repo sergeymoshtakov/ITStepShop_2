@@ -1,0 +1,65 @@
+﻿@model List<ITStepShop.Models.Product>
+
+@{
+    ViewData["Title"] = "Список товарів";
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="category-filter">Фільтрувати за категорією:</label>
+            <select id="category-filter" class="form-control">
+                <option value="">Усі категорії</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.Id">@category.CategoryName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button id="apply-filter" class="btn btn-primary">Застосувати</button>
+        </div>
+    </div>
+
+    <table id="product-table" class="table">
+        <thead>
+            <tr>
+                <th>Ім'я товару</th>
+                <th>Короткий опис</th>
+                <th>Ціна</th>
+                <th>Категорія</th>
+                <th>Придбати</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.ShortDesc</td>
+                    <td>@product.Price</td>
+                    <td>@product.Category?.CategoryName</td>
+                    <td><a href="#" class="btn btn-primary">Придбати</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#apply-filter').click(function () {
+                var categoryId = $('#category-filter').val();
+                $.ajax({
+                    url: '/Product/FilterByCategory',
+                    type: 'GET',
+                    data: { categoryId: categoryId },
+                    success: function (data) {
+                        $('#product-table').html(data);
+                    }
+                });
+            });
+        });
+    </script>
+}
